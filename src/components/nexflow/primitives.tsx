@@ -1,17 +1,20 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function Panel({
   children,
   className,
   glow,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   glow?: boolean;
+  style?: CSSProperties;
 }) {
   return (
     <div
+      style={style}
       className={cn(
         "relative rounded-2xl border border-border/60 bg-[var(--surface-1)]/80 backdrop-blur-md",
         glow && "shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]",
