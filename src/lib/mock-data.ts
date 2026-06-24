@@ -250,13 +250,13 @@ export const scoreBreakdown = [
   { label: "리스크", value: 45, inverted: true },
 ];
 
-export const newsEvents = [
+export const newsEvents: { date: string; title: string; category: string; impact: "긍정" | "중립" | "부정"; score: number }[] = [
   { date: "06.26", title: "NVIDIA 실적 발표", category: "실적", impact: "긍정", score: 8 },
   { date: "06.27", title: "Micron 가이던스", category: "실적", impact: "중립", score: 5 },
   { date: "07.24", title: "SK하이닉스 실적 발표", category: "실적", impact: "긍정", score: 9 },
   { date: "06.25", title: "DART 공시 — 자기주식 처분", category: "공시", impact: "중립", score: 4 },
   { date: "08.12", title: "MSCI/KOSPI200 리밸런싱", category: "이벤트", impact: "긍정", score: 6 },
-] as const;
+];
 
 export const alerts = [
   {
