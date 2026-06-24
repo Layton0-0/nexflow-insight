@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as ScenarioRouteImport } from './routes/scenario'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnalysisRouteImport } from './routes/analysis'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenarioRoute = ScenarioRouteImport.update({
+  id: '/scenario',
+  path: '/scenario',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/analysis': typeof AnalysisRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/scenario': typeof ScenarioRoute
   '/watchlist': typeof WatchlistRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/analysis': typeof AnalysisRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/scenario': typeof ScenarioRoute
   '/watchlist': typeof WatchlistRoute
 }
 export interface FileRoutesById {
@@ -61,19 +69,33 @@ export interface FileRoutesById {
   '/analysis': typeof AnalysisRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/scenario': typeof ScenarioRoute
   '/watchlist': typeof WatchlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analysis' | '/dashboard' | '/portfolio' | '/watchlist'
+  fullPaths:
+    | '/'
+    | '/analysis'
+    | '/dashboard'
+    | '/portfolio'
+    | '/scenario'
+    | '/watchlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analysis' | '/dashboard' | '/portfolio' | '/watchlist'
+  to:
+    | '/'
+    | '/analysis'
+    | '/dashboard'
+    | '/portfolio'
+    | '/scenario'
+    | '/watchlist'
   id:
     | '__root__'
     | '/'
     | '/analysis'
     | '/dashboard'
     | '/portfolio'
+    | '/scenario'
     | '/watchlist'
   fileRoutesById: FileRoutesById
 }
@@ -82,6 +104,7 @@ export interface RootRouteChildren {
   AnalysisRoute: typeof AnalysisRoute
   DashboardRoute: typeof DashboardRoute
   PortfolioRoute: typeof PortfolioRoute
+  ScenarioRoute: typeof ScenarioRoute
   WatchlistRoute: typeof WatchlistRoute
 }
 
@@ -92,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenario': {
+      id: '/scenario'
+      path: '/scenario'
+      fullPath: '/scenario'
+      preLoaderRoute: typeof ScenarioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -130,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalysisRoute: AnalysisRoute,
   DashboardRoute: DashboardRoute,
   PortfolioRoute: PortfolioRoute,
+  ScenarioRoute: ScenarioRoute,
   WatchlistRoute: WatchlistRoute,
 }
 export const routeTree = rootRouteImport
