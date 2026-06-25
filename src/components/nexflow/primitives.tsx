@@ -16,8 +16,8 @@ export function Panel({
     <div
       style={style}
       className={cn(
-        "relative rounded-2xl border border-border/60 bg-[var(--surface-1)]/80 backdrop-blur-md",
-        glow && "shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]",
+        "relative rounded-2xl border border-border bg-card",
+        glow && "shadow-[0_1px_2px_oklch(0_0_0/0.04),0_8px_24px_-16px_oklch(0_0_0/0.12)]",
         className,
       )}
     >
@@ -43,7 +43,7 @@ export function PanelHeader({
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5", className)}>
       <div className="min-w-0">
         {eyebrow && (
-          <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--cyan-accent)] mb-1 font-semibold">
+          <div className="text-[11px] tracking-tight text-primary mb-1 font-semibold">
             {eyebrow}
           </div>
         )}
@@ -77,7 +77,7 @@ export function Stat({
   return (
     <div>
       <div className="text-[11px] text-muted-foreground">{label}</div>
-      <div className={cn("text-xl font-semibold tabular-nums mt-1", color)}>
+      <div className={cn("text-xl font-semibold tabular mt-1 tracking-tight", color)}>
         {value}
         {suffix && <span className="text-xs text-muted-foreground ml-1">{suffix}</span>}
       </div>
@@ -96,16 +96,16 @@ export function Badge({
   className?: string;
 }) {
   const map = {
-    bullish: "bg-[color-mix(in_oklab,var(--bullish)_18%,transparent)] text-[var(--bullish)] border-[var(--bullish)]/30",
-    bearish: "bg-[color-mix(in_oklab,var(--bearish)_18%,transparent)] text-[var(--bearish)] border-[var(--bearish)]/30",
-    neutral: "bg-muted/50 text-muted-foreground border-border/60",
-    info: "bg-[color-mix(in_oklab,var(--cyan-accent)_15%,transparent)] text-[var(--cyan-accent)] border-[var(--cyan-accent)]/30",
-    warn: "bg-[color-mix(in_oklab,var(--neutral-accent)_18%,transparent)] text-[var(--neutral-accent)] border-[var(--neutral-accent)]/30",
+    bullish: "bg-[color-mix(in_oklab,var(--bullish)_10%,transparent)] text-[var(--bullish)] border-[color-mix(in_oklab,var(--bullish)_22%,transparent)]",
+    bearish: "bg-[color-mix(in_oklab,var(--bearish)_10%,transparent)] text-[var(--bearish)] border-[color-mix(in_oklab,var(--bearish)_22%,transparent)]",
+    neutral: "bg-muted text-muted-foreground border-border",
+    info: "bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_oklab,var(--primary)_22%,transparent)]",
+    warn: "bg-[color-mix(in_oklab,var(--neutral-accent)_14%,transparent)] text-[var(--neutral-accent)] border-[color-mix(in_oklab,var(--neutral-accent)_28%,transparent)]",
   } as const;
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border tabular-nums",
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border tabular",
         map[intent],
         className,
       )}
@@ -120,7 +120,7 @@ export function Delta({ value, suffix = "%" }: { value: number; suffix?: string 
   return (
     <span
       className={cn(
-        "tabular-nums font-medium",
+        "tabular font-medium",
         positive ? "text-[var(--bullish)]" : "text-[var(--bearish)]",
       )}
     >
@@ -146,11 +146,11 @@ export function SectionTitle({
     <div className="flex items-end justify-between gap-4 mb-4">
       <div>
         {eyebrow && (
-          <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--cyan-accent)] mb-1.5 font-semibold">
+          <div className="text-[11px] text-primary mb-1.5 font-semibold tracking-tight">
             {eyebrow}
           </div>
         )}
-        <h2 className="text-xl md:text-2xl font-semibold text-foreground">{title}</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">{title}</h2>
         {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
       </div>
       {right}
