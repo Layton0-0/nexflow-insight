@@ -8,6 +8,8 @@ import {
   signalColor,
   signalIntent,
   signalLabel,
+  type Theme,
+  type ThemeStock,
 } from "@/lib/mock-market-screens";
 import { useState } from "react";
 import { Star, CheckCircle2, AlertTriangle } from "lucide-react";
@@ -15,11 +17,6 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/themes/$slug")({
   head: ({ params }) => ({ meta: [{ title: `테마 ${params.slug} — NEXFLOW` }] }),
-  loader: ({ params }) => {
-    const theme = themes.find((t) => t.slug === params.slug);
-    if (!theme) throw notFound();
-    return { theme, stocks: themeStocksBySlug[params.slug] ?? [] };
-  },
   notFoundComponent: () => (
     <AppShell>
       <Panel className="p-10 text-center text-sm text-muted-foreground max-w-2xl mx-auto">
@@ -34,7 +31,10 @@ export const Route = createFileRoute("/themes/$slug")({
 });
 
 function ThemeDetail() {
-  const { theme, stocks } = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const theme: Theme | undefined = themes.find((t) => t.slug === slug);
+  if (!theme) throw notFound();
+  const stocks: ThemeStock[] = themeStocksBySlug[slug] ?? [];
   const [saved, setSaved] = useState(false);
 
   return (

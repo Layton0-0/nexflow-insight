@@ -19,6 +19,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
 import { Route as PicksUsRouteImport } from './routes/picks.us'
 import { Route as PicksKrRouteImport } from './routes/picks.kr'
 
@@ -72,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ThemesRoute,
+} as any)
 const PicksUsRoute = PicksUsRouteImport.update({
   id: '/picks/us',
   path: '/picks/us',
@@ -92,10 +98,11 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
-  '/themes': typeof ThemesRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -106,10 +113,11 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
-  '/themes': typeof ThemesRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -121,10 +129,11 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
-  '/themes': typeof ThemesRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/themes/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/themes/$slug'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/themes/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,7 +192,7 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   ScenarioRoute: typeof ScenarioRoute
   SettingsRoute: typeof SettingsRoute
-  ThemesRoute: typeof ThemesRoute
+  ThemesRoute: typeof ThemesRouteWithChildren
   WatchlistRoute: typeof WatchlistRoute
   PicksKrRoute: typeof PicksKrRoute
   PicksUsRoute: typeof PicksUsRoute
@@ -258,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
+      parentRoute: typeof ThemesRoute
+    }
     '/picks/us': {
       id: '/picks/us'
       path: '/picks/us'
@@ -275,6 +294,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ThemesRouteChildren {
+  ThemesSlugRoute: typeof ThemesSlugRoute
+}
+
+const ThemesRouteChildren: ThemesRouteChildren = {
+  ThemesSlugRoute: ThemesSlugRoute,
+}
+
+const ThemesRouteWithChildren =
+  ThemesRoute._addFileChildren(ThemesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
@@ -284,7 +314,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   ScenarioRoute: ScenarioRoute,
   SettingsRoute: SettingsRoute,
-  ThemesRoute: ThemesRoute,
+  ThemesRoute: ThemesRouteWithChildren,
   WatchlistRoute: WatchlistRoute,
   PicksKrRoute: PicksKrRoute,
   PicksUsRoute: PicksUsRoute,
