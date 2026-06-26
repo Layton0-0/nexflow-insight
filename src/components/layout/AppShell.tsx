@@ -173,6 +173,7 @@ function BottomNav({ pathname }: { pathname: string }) {
 function Header() {
   const [market, setMarket] = useState<"국내" | "미국" | "전체">("전체");
   const [horizon, setHorizon] = useState<"단기" | "1개월" | "3개월" | "장기">("1개월");
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-border bg-background/85 backdrop-blur-xl">
@@ -180,14 +181,14 @@ function Header() {
         <div className="md:hidden">
           <Brand />
         </div>
-        <div className="hidden md:flex items-center flex-1 max-w-md relative">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/search" })}
+          className="hidden md:flex items-center flex-1 max-w-md relative h-10 pl-9 pr-3 rounded-lg bg-muted border border-border text-sm text-muted-foreground/90 hover:text-foreground hover:border-primary/40 transition-colors text-left"
+        >
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="종목명 또는 티커 검색"
-            className="w-full h-10 pl-9 pr-3 rounded-lg bg-muted border border-border text-sm placeholder:text-muted-foreground/80 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-ring/40 transition-colors"
-          />
-        </div>
+          종목명 또는 티커 검색
+        </button>
         <div className="flex-1 md:hidden" />
         <div className="hidden lg:flex items-center gap-0.5 p-0.5 rounded-lg bg-muted border border-border">
           {(["국내", "미국", "전체"] as const).map((m) => (
