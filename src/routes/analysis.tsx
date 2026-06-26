@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle, Badge, Delta } from "@/components/nexflow/primitives";
 import { ScoreRing, ScoreBar, NexflowScoreCard } from "@/components/nexflow/widgets";
@@ -13,7 +14,7 @@ import {
   YAxis,
   XAxis,
 } from "recharts";
-import { CheckCircle2, XCircle, Calendar, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Calendar, Clock, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,14 @@ function Analysis() {
               <div className="text-[10px] text-muted-foreground">CURRENT DECISION</div>
               <div className="text-lg font-semibold mt-0.5">보유 우위</div>
               <div className="text-xs text-muted-foreground">신규매수는 눌림 대기</div>
+              <Link
+                to="/analysis/$ticker/pullback"
+                params={{ ticker: "000660" }}
+                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                <TrendingDown className="h-3.5 w-3.5" />
+                하락 분석 보기
+              </Link>
             </div>
           </div>
         </div>
