@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ScenarioRouteImport } from './routes/scenario'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -18,15 +20,29 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
+import { Route as PicksUsRouteImport } from './routes/picks.us'
+import { Route as PicksKrRouteImport } from './routes/picks.kr'
+import { Route as AnalysisTickerPullbackRouteImport } from './routes/analysis.$ticker.pullback'
 
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThemesRoute = ThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScenarioRoute = ScenarioRouteImport.update({
@@ -64,40 +80,78 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ThemesRoute,
+} as any)
+const PicksUsRoute = PicksUsRouteImport.update({
+  id: '/picks/us',
+  path: '/picks/us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PicksKrRoute = PicksKrRouteImport.update({
+  id: '/picks/kr',
+  path: '/picks/kr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalysisTickerPullbackRoute = AnalysisTickerPullbackRouteImport.update({
+  id: '/$ticker/pullback',
+  path: '/$ticker/pullback',
+  getParentRoute: () => AnalysisRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
+  '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
+  '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRouteWithChildren
   '/watchlist': typeof WatchlistRoute
+  '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +163,14 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/scenario'
+    | '/search'
     | '/settings'
+    | '/themes'
     | '/watchlist'
+    | '/picks/kr'
+    | '/picks/us'
+    | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,8 +180,14 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/scenario'
+    | '/search'
     | '/settings'
+    | '/themes'
     | '/watchlist'
+    | '/picks/kr'
+    | '/picks/us'
+    | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   id:
     | '__root__'
     | '/'
@@ -131,20 +197,30 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/scenario'
+    | '/search'
     | '/settings'
+    | '/themes'
     | '/watchlist'
+    | '/picks/kr'
+    | '/picks/us'
+    | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
-  AnalysisRoute: typeof AnalysisRoute
+  AnalysisRoute: typeof AnalysisRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
   ScenarioRoute: typeof ScenarioRoute
+  SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
+  ThemesRoute: typeof ThemesRouteWithChildren
   WatchlistRoute: typeof WatchlistRoute
+  PicksKrRoute: typeof PicksKrRoute
+  PicksUsRoute: typeof PicksUsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -156,11 +232,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WatchlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/themes': {
+      id: '/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof ThemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scenario': {
@@ -212,19 +302,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
+      parentRoute: typeof ThemesRoute
+    }
+    '/picks/us': {
+      id: '/picks/us'
+      path: '/picks/us'
+      fullPath: '/picks/us'
+      preLoaderRoute: typeof PicksUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/picks/kr': {
+      id: '/picks/kr'
+      path: '/picks/kr'
+      fullPath: '/picks/kr'
+      preLoaderRoute: typeof PicksKrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analysis/$ticker/pullback': {
+      id: '/analysis/$ticker/pullback'
+      path: '/$ticker/pullback'
+      fullPath: '/analysis/$ticker/pullback'
+      preLoaderRoute: typeof AnalysisTickerPullbackRouteImport
+      parentRoute: typeof AnalysisRoute
+    }
   }
 }
+
+interface AnalysisRouteChildren {
+  AnalysisTickerPullbackRoute: typeof AnalysisTickerPullbackRoute
+}
+
+const AnalysisRouteChildren: AnalysisRouteChildren = {
+  AnalysisTickerPullbackRoute: AnalysisTickerPullbackRoute,
+}
+
+const AnalysisRouteWithChildren = AnalysisRoute._addFileChildren(
+  AnalysisRouteChildren,
+)
+
+interface ThemesRouteChildren {
+  ThemesSlugRoute: typeof ThemesSlugRoute
+}
+
+const ThemesRouteChildren: ThemesRouteChildren = {
+  ThemesSlugRoute: ThemesSlugRoute,
+}
+
+const ThemesRouteWithChildren =
+  ThemesRoute._addFileChildren(ThemesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
-  AnalysisRoute: AnalysisRoute,
+  AnalysisRoute: AnalysisRouteWithChildren,
   DashboardRoute: DashboardRoute,
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
   ScenarioRoute: ScenarioRoute,
+  SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
+  ThemesRoute: ThemesRouteWithChildren,
   WatchlistRoute: WatchlistRoute,
+  PicksKrRoute: PicksKrRoute,
+  PicksUsRoute: PicksUsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
