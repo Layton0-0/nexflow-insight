@@ -5,7 +5,6 @@ import {
   type MarketPick,
   signalColor,
   signalIntent,
-  signalLabel,
   formatPrice,
 } from "@/lib/mock-market-screens";
 import { useState } from "react";
