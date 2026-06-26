@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ScenarioRouteImport } from './routes/scenario'
 import { Route as ReportsRouteImport } from './routes/reports'
@@ -24,6 +25,11 @@ import { Route as PicksKrRouteImport } from './routes/picks.kr'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesRoute = ThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/scenario': typeof ScenarioRoute
   '/settings': typeof SettingsRoute
+  '/themes': typeof ThemesRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/scenario'
     | '/settings'
+    | '/themes'
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/scenario'
     | '/settings'
+    | '/themes'
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/scenario'
     | '/settings'
+    | '/themes'
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   ScenarioRoute: typeof ScenarioRoute
   SettingsRoute: typeof SettingsRoute
+  ThemesRoute: typeof ThemesRoute
   WatchlistRoute: typeof WatchlistRoute
   PicksKrRoute: typeof PicksKrRoute
   PicksUsRoute: typeof PicksUsRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes': {
+      id: '/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof ThemesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   ScenarioRoute: ScenarioRoute,
   SettingsRoute: SettingsRoute,
+  ThemesRoute: ThemesRoute,
   WatchlistRoute: WatchlistRoute,
   PicksKrRoute: PicksKrRoute,
   PicksUsRoute: PicksUsRoute,
