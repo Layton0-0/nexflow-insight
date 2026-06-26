@@ -23,6 +23,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
 import { Route as PicksUsRouteImport } from './routes/picks.us'
 import { Route as PicksKrRouteImport } from './routes/picks.kr'
+import { Route as AnalysisTickerPullbackRouteImport } from './routes/analysis.$ticker.pullback'
 
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
@@ -94,11 +95,16 @@ const PicksKrRoute = PicksKrRouteImport.update({
   path: '/picks/kr',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalysisTickerPullbackRoute = AnalysisTickerPullbackRouteImport.update({
+  id: '/$ticker/pullback',
+  path: '/$ticker/pullback',
+  getParentRoute: () => AnalysisRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -110,11 +116,12 @@ export interface FileRoutesByFullPath {
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -126,12 +133,13 @@ export interface FileRoutesByTo {
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
-  '/analysis': typeof AnalysisRoute
+  '/analysis': typeof AnalysisRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/picks/kr'
     | '/picks/us'
     | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/picks/kr'
     | '/picks/us'
     | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   id:
     | '__root__'
     | '/'
@@ -193,12 +204,13 @@ export interface FileRouteTypes {
     | '/picks/kr'
     | '/picks/us'
     | '/themes/$slug'
+    | '/analysis/$ticker/pullback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
-  AnalysisRoute: typeof AnalysisRoute
+  AnalysisRoute: typeof AnalysisRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
@@ -311,8 +323,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PicksKrRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analysis/$ticker/pullback': {
+      id: '/analysis/$ticker/pullback'
+      path: '/$ticker/pullback'
+      fullPath: '/analysis/$ticker/pullback'
+      preLoaderRoute: typeof AnalysisTickerPullbackRouteImport
+      parentRoute: typeof AnalysisRoute
+    }
   }
 }
+
+interface AnalysisRouteChildren {
+  AnalysisTickerPullbackRoute: typeof AnalysisTickerPullbackRoute
+}
+
+const AnalysisRouteChildren: AnalysisRouteChildren = {
+  AnalysisTickerPullbackRoute: AnalysisTickerPullbackRoute,
+}
+
+const AnalysisRouteWithChildren = AnalysisRoute._addFileChildren(
+  AnalysisRouteChildren,
+)
 
 interface ThemesRouteChildren {
   ThemesSlugRoute: typeof ThemesSlugRoute
@@ -328,7 +359,7 @@ const ThemesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
-  AnalysisRoute: AnalysisRoute,
+  AnalysisRoute: AnalysisRouteWithChildren,
   DashboardRoute: DashboardRoute,
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,

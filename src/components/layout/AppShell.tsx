@@ -1,5 +1,5 @@
 import { type ReactNode, useState } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Star,
@@ -13,12 +13,19 @@ import {
   Sun,
   Moon,
   Monitor,
+  Flag,
+  Globe,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme, type Theme } from "@/hooks/use-theme";
 
 const NAV = [
   { to: "/dashboard", label: "대시보드", icon: LayoutDashboard },
+  { to: "/picks/kr", label: "국내 후보", icon: Flag },
+  { to: "/picks/us", label: "미국 후보", icon: Globe },
+  { to: "/themes", label: "테마 분석", icon: Sparkles },
+  { to: "/search", label: "종목 검색", icon: Search },
   { to: "/watchlist", label: "관심종목", icon: Star },
   { to: "/analysis", label: "종목 분석", icon: LineChart },
   { to: "/portfolio", label: "포트폴리오", icon: Wallet },
