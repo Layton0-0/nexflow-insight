@@ -18,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PicksUsRouteImport } from './routes/picks.us'
 import { Route as PicksKrRouteImport } from './routes/picks.kr'
 
 const WatchlistRoute = WatchlistRouteImport.update({
@@ -65,6 +66,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PicksUsRoute = PicksUsRouteImport.update({
+  id: '/picks/us',
+  path: '/picks/us',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PicksKrRoute = PicksKrRouteImport.update({
   id: '/picks/kr',
   path: '/picks/kr',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
+  '/picks/us': typeof PicksUsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/watchlist'
     | '/picks/kr'
+    | '/picks/us'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/watchlist'
     | '/picks/kr'
+    | '/picks/us'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/watchlist'
     | '/picks/kr'
+    | '/picks/us'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   WatchlistRoute: typeof WatchlistRoute
   PicksKrRoute: typeof PicksKrRoute
+  PicksUsRoute: typeof PicksUsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/picks/us': {
+      id: '/picks/us'
+      path: '/picks/us'
+      fullPath: '/picks/us'
+      preLoaderRoute: typeof PicksUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/picks/kr': {
       id: '/picks/kr'
       path: '/picks/kr'
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   WatchlistRoute: WatchlistRoute,
   PicksKrRoute: PicksKrRoute,
+  PicksUsRoute: PicksUsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
