@@ -20,7 +20,9 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SnapshotsIndexRouteImport } from './routes/snapshots.index'
 import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
+import { Route as SnapshotsSnapshotIdRouteImport } from './routes/snapshots.$snapshotId'
 import { Route as PicksUsRouteImport } from './routes/picks.us'
 import { Route as PicksKrRouteImport } from './routes/picks.kr'
 import { Route as AnalysisTickerPullbackRouteImport } from './routes/analysis.$ticker.pullback'
@@ -80,10 +82,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SnapshotsIndexRoute = SnapshotsIndexRouteImport.update({
+  id: '/snapshots/',
+  path: '/snapshots/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ThemesSlugRoute = ThemesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ThemesRoute,
+} as any)
+const SnapshotsSnapshotIdRoute = SnapshotsSnapshotIdRouteImport.update({
+  id: '/snapshots/$snapshotId',
+  path: '/snapshots/$snapshotId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PicksUsRoute = PicksUsRouteImport.update({
   id: '/picks/us',
@@ -115,7 +127,9 @@ export interface FileRoutesByFullPath {
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/snapshots/$snapshotId': typeof SnapshotsSnapshotIdRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/snapshots/': typeof SnapshotsIndexRoute
   '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesByTo {
@@ -132,7 +146,9 @@ export interface FileRoutesByTo {
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/snapshots/$snapshotId': typeof SnapshotsSnapshotIdRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/snapshots': typeof SnapshotsIndexRoute
   '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRoutesById {
@@ -150,7 +166,9 @@ export interface FileRoutesById {
   '/watchlist': typeof WatchlistRoute
   '/picks/kr': typeof PicksKrRoute
   '/picks/us': typeof PicksUsRoute
+  '/snapshots/$snapshotId': typeof SnapshotsSnapshotIdRoute
   '/themes/$slug': typeof ThemesSlugRoute
+  '/snapshots/': typeof SnapshotsIndexRoute
   '/analysis/$ticker/pullback': typeof AnalysisTickerPullbackRoute
 }
 export interface FileRouteTypes {
@@ -169,7 +187,9 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/snapshots/$snapshotId'
     | '/themes/$slug'
+    | '/snapshots/'
     | '/analysis/$ticker/pullback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -186,7 +206,9 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/snapshots/$snapshotId'
     | '/themes/$slug'
+    | '/snapshots'
     | '/analysis/$ticker/pullback'
   id:
     | '__root__'
@@ -203,7 +225,9 @@ export interface FileRouteTypes {
     | '/watchlist'
     | '/picks/kr'
     | '/picks/us'
+    | '/snapshots/$snapshotId'
     | '/themes/$slug'
+    | '/snapshots/'
     | '/analysis/$ticker/pullback'
   fileRoutesById: FileRoutesById
 }
@@ -221,6 +245,8 @@ export interface RootRouteChildren {
   WatchlistRoute: typeof WatchlistRoute
   PicksKrRoute: typeof PicksKrRoute
   PicksUsRoute: typeof PicksUsRoute
+  SnapshotsSnapshotIdRoute: typeof SnapshotsSnapshotIdRoute
+  SnapshotsIndexRoute: typeof SnapshotsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,12 +328,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/snapshots/': {
+      id: '/snapshots/'
+      path: '/snapshots'
+      fullPath: '/snapshots/'
+      preLoaderRoute: typeof SnapshotsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/themes/$slug': {
       id: '/themes/$slug'
       path: '/$slug'
       fullPath: '/themes/$slug'
       preLoaderRoute: typeof ThemesSlugRouteImport
       parentRoute: typeof ThemesRoute
+    }
+    '/snapshots/$snapshotId': {
+      id: '/snapshots/$snapshotId'
+      path: '/snapshots/$snapshotId'
+      fullPath: '/snapshots/$snapshotId'
+      preLoaderRoute: typeof SnapshotsSnapshotIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/picks/us': {
       id: '/picks/us'
@@ -370,6 +410,8 @@ const rootRouteChildren: RootRouteChildren = {
   WatchlistRoute: WatchlistRoute,
   PicksKrRoute: PicksKrRoute,
   PicksUsRoute: PicksUsRoute,
+  SnapshotsSnapshotIdRoute: SnapshotsSnapshotIdRoute,
+  SnapshotsIndexRoute: SnapshotsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
