@@ -16,6 +16,7 @@ import {
   Flag,
   Globe,
   Sparkles,
+  BookmarkCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme, type Theme } from "@/hooks/use-theme";
@@ -29,6 +30,7 @@ const NAV = [
   { to: "/watchlist", label: "관심종목", icon: Star },
   { to: "/analysis", label: "종목 분석", icon: LineChart },
   { to: "/portfolio", label: "포트폴리오", icon: Wallet },
+  { to: "/snapshots", label: "전략 스냅샷", icon: BookmarkCheck },
   { to: "/scenario", label: "시나리오", icon: GitBranch },
   { to: "/alerts", label: "알림", icon: Bell },
   { to: "/reports", label: "리포트", icon: FileText },
