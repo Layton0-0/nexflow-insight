@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import type { Snapshot } from "@/lib/mock-snapshots";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, Badge, Delta } from "@/components/nexflow/primitives";
 import {
@@ -26,16 +27,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/snapshots/$snapshotId")({
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: loaderData
-          ? `${loaderData.company} 전략 스냅샷 — NEXFLOW`
-          : "스냅샷 — NEXFLOW",
-      },
-    ],
-  }),
-  loader: ({ params }) => {
+  head: () => ({ meta: [{ title: "전략 스냅샷 — NEXFLOW" }] }),
+  loader: ({ params }): Snapshot => {
     const s = snapshots.find((x) => x.id === params.snapshotId);
     if (!s) throw notFound();
     return s;
@@ -58,7 +51,7 @@ export const Route = createFileRoute("/snapshots/$snapshotId")({
 });
 
 function SnapshotDetail() {
-  const s = Route.useLoaderData();
+  const s = Route.useLoaderData() as Snapshot;
   const change = ((s.currentPrice - s.savedPrice) / s.savedPrice) * 100;
   const targetDist = ((s.targetPrice - s.currentPrice) / s.currentPrice) * 100;
   const invDist = ((s.currentPrice - s.invalidationPrice) / s.currentPrice) * 100;
@@ -165,7 +158,7 @@ function SnapshotDetail() {
             System Interpretation · 시스템 해석
           </div>
           <p className="text-sm text-foreground/90 leading-relaxed">
-            {systemInterpretationMap[s.status]}
+            {systemInterpretationMap[s.status as keyof typeof systemInterpretationMap]}
           </p>
         </div>
       </Panel>
@@ -215,7 +208,7 @@ function SnapshotDetail() {
             title="투자 논리"
           />
           <ul className="mt-4 space-y-2">
-            {s.thesis.map((t) => (
+            {s.thesis.map((t: string) => (
               <li key={t} className="flex items-start gap-2 text-sm">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                 <span className="text-foreground/90 leading-relaxed">{t}</span>
@@ -232,7 +225,7 @@ function SnapshotDetail() {
             title="핵심 리스크"
           />
           <ul className="mt-4 space-y-2">
-            {s.risks.map((t) => (
+            {s.risks.map((t: string) => (
               <li key={t} className="flex items-start gap-2 text-sm">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--bearish)] shrink-0" />
                 <span className="text-foreground/90 leading-relaxed">{t}</span>
@@ -249,7 +242,7 @@ function SnapshotDetail() {
             title="유지 조건"
           />
           <ul className="mt-4 space-y-2">
-            {s.watchConditions.map((w) => (
+            {s.watchConditions.map((w: { label: string; met: boolean }) => (
               <li
                 key={w.label}
                 className="flex items-start gap-2.5 text-sm py-1.5 border-b border-border/50 last:border-0"
