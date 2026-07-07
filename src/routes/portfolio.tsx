@@ -5,6 +5,9 @@ import { Panel, PanelHeader, SectionTitle, Badge, Delta, Stat } from "@/componen
 import { portfolioHoldings, exposureBreakdown, formatPrice } from "@/lib/mock-data";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { ChevronDown, Shield, TrendingUp, Scale } from "lucide-react";
+import { BookmarkCheck } from "lucide-react";
+import { SavePersonalSnapshotDialog } from "@/components/nexflow/snapshots";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/portfolio")({
@@ -15,7 +18,17 @@ export const Route = createFileRoute("/portfolio")({
 function Portfolio() {
   return (
     <div className="space-y-6">
-      <SectionTitle eyebrow="PORTFOLIO" title="포트폴리오 분석" description="보유 종목을 판단 관점에서 진단합니다." />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <SectionTitle eyebrow="PORTFOLIO" title="포트폴리오 분석" description="보유 종목을 판단 관점에서 진단합니다." />
+        <SavePersonalSnapshotDialog
+          trigger={
+            <Button>
+              <BookmarkCheck className="h-4 w-4" />
+              내 투자 스냅샷 추가
+            </Button>
+          }
+        />
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Panel className="p-5"><Stat label="총 평가금액" value="112,840,000원" suffix="KRW" /></Panel>
@@ -99,7 +112,8 @@ function Portfolio() {
                 <th className="text-left font-medium px-3 py-3">판단</th>
                 <th className="text-left font-medium px-3 py-3">권장 액션</th>
                 <th className="text-right font-medium px-3 py-3">익절</th>
-                <th className="text-right font-medium px-5 py-3">방어</th>
+                <th className="text-right font-medium px-3 py-3">방어</th>
+                <th className="text-right font-medium px-5 py-3">스냅샷</th>
               </tr>
             </thead>
             <tbody>
