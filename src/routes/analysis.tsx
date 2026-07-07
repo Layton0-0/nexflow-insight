@@ -15,6 +15,9 @@ import {
   XAxis,
 } from "recharts";
 import { CheckCircle2, XCircle, Calendar, Clock, TrendingDown } from "lucide-react";
+import { BookmarkCheck } from "lucide-react";
+import { SaveAiSnapshotDialog } from "@/components/nexflow/snapshots";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +62,19 @@ function Analysis() {
                 <TrendingDown className="h-3.5 w-3.5" />
                 하락 분석 보기
               </Link>
+              <div className="mt-2">
+                <SaveAiSnapshotDialog
+                  trigger={
+                    <Button size="sm" variant="outline" className="text-xs">
+                      <BookmarkCheck className="h-3.5 w-3.5" />
+                      추천 전략 저장
+                    </Button>
+                  }
+                />
+                <div className="text-[10px] text-muted-foreground mt-1">
+                  현재 진입·추가매수·트림·무효화 구간을 저장합니다.
+                </div>
+              </div>
             </div>
           </div>
         </div>
