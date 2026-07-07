@@ -159,11 +159,29 @@ function HoldingRow({ h, ret }: { h: typeof portfolioHoldings[number]; ret: numb
         <td className="px-3 py-3">{h.decision}</td>
         <td className="px-3 py-3 text-muted-foreground">{h.action}</td>
         <td className="px-3 py-3 text-right text-[var(--bullish)] tabular-nums">{h.targetZone}</td>
-        <td className="px-5 py-3 text-right text-[var(--bearish)] tabular-nums">{h.defenseZone}</td>
+        <td className="px-3 py-3 text-right text-[var(--bearish)] tabular-nums">{h.defenseZone}</td>
+        <td className="px-5 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+          <SavePersonalSnapshotDialog
+            preset={{
+              company: h.name,
+              ticker: h.ticker,
+              market: h.currency === "KRW" ? "KR" : "US",
+              quantity: h.shares,
+              avgCost: formatPrice(h.avgPrice, h.currency),
+              price: formatPrice(h.price, h.currency),
+            }}
+            trigger={
+              <Button size="sm" variant="ghost" className="text-xs">
+                <BookmarkCheck className="h-3.5 w-3.5" />
+                스냅샷 저장
+              </Button>
+            }
+          />
+        </td>
       </tr>
       {open && (
         <tr className="bg-[var(--surface-2)]/40 border-b border-border/30">
-          <td colSpan={9} className="px-5 py-4">
+          <td colSpan={10} className="px-5 py-4">
             <div className="grid md:grid-cols-5 gap-3 text-xs">
               {[
                 { t: "보유 근거", v: "실적 성장 추세 유지, 수급 안정", c: "var(--bullish)" },
