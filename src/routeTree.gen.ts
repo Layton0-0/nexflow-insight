@@ -17,6 +17,7 @@ import { Route as ScenarioRouteImport } from './routes/scenario'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
@@ -65,6 +66,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutomationRoute = AutomationRouteImport.update({
+  id: '/automation',
+  path: '/automation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalysisRoute = AnalysisRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
+  '/automation': typeof AutomationRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
+  '/automation': typeof AutomationRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
+  '/automation': typeof AutomationRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analysis'
+    | '/automation'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analysis'
+    | '/automation'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analysis'
+    | '/automation'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
   AnalysisRoute: typeof AnalysisRouteWithChildren
+  AutomationRoute: typeof AutomationRoute
   DashboardRoute: typeof DashboardRoute
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
@@ -305,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automation': {
+      id: '/automation'
+      path: '/automation'
+      fullPath: '/automation'
+      preLoaderRoute: typeof AutomationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analysis': {
@@ -400,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
   AnalysisRoute: AnalysisRouteWithChildren,
+  AutomationRoute: AutomationRoute,
   DashboardRoute: DashboardRoute,
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
