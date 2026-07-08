@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle } from "@/components/nexflow/primitives";
 import { cn } from "@/lib/utils";
+import { KeyRound, ShieldCheck, ShieldAlert, LockKeyhole, Fingerprint, ChevronRight, Bot } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "설정 — NEXFLOW" }] }),
@@ -98,6 +100,54 @@ function SettingsPage() {
         <button className="h-10 px-4 rounded-lg border border-border/60 text-sm">초기화</button>
         <button className="h-10 px-5 rounded-lg bg-[var(--cyan-accent)] text-[oklch(0.12_0.03_270)] text-sm font-semibold glow-cyan">저장</button>
       </div>
+
+      <SectionTitle eyebrow="BROKER & AUTOMATION" title="증권사 및 자동투자 설정" description="증권 계좌 연결, 자동화 모드, 리스크 한도, 감사 로그를 한 곳에서 관리합니다." />
+      <div className="grid md:grid-cols-2 gap-4">
+        {[
+          { icon: KeyRound, title: "증권사 연동", desc: "한국투자 · 키움 · 토스 계좌를 안전하게 관리합니다.", to: "/automation" },
+          { icon: Bot, title: "자동화 모드", desc: "모의투자만 · 실전 자동매매는 잠금 상태입니다.", to: "/automation" },
+          { icon: ShieldAlert, title: "리스크 한도", desc: "일일 손실 · 주문 한도 · 킬스위치를 설정합니다.", to: "/automation" },
+          { icon: Fingerprint, title: "감사 로그", desc: "자동화와 관련된 모든 이벤트를 추적합니다.", to: "/automation" },
+        ].map((c) => {
+          const Icon = c.icon;
+          return (
+            <Link key={c.title} to={c.to} className="block">
+              <Panel className="p-5 hover:border-primary/40 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-muted grid place-items-center"><Icon className="h-5 w-5 text-primary" /></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold">{c.title}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{c.desc}</div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                </div>
+              </Panel>
+            </Link>
+          );
+        })}
+      </div>
+
+      <Panel className="p-5">
+        <PanelHeader eyebrow="SECURITY & SECRETS" title="보안 및 자격증명" subtitle="자격증명은 암호화되어 저장되며, 저장 후 다시 전체 값으로 표시되지 않습니다." className="!p-0" />
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border">
+            <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[var(--primary)]" />자격증명 암호화</div>
+            <span className="text-xs text-muted-foreground">활성 · AES-256 GCM</span>
+          </div>
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border">
+            <div className="flex items-center gap-2"><LockKeyhole className="h-4 w-4 text-[var(--primary)]" />비밀 값 마스킹</div>
+            <span className="text-xs text-muted-foreground">저장 후 재표시 불가</span>
+          </div>
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border">
+            <div className="flex items-center gap-2"><Fingerprint className="h-4 w-4 text-[var(--primary)]" />마지막 자격증명 검증</div>
+            <span className="text-xs text-muted-foreground tabular">2026.06.24 09:12</span>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button className="h-9 px-3 rounded-lg border border-border text-sm">모든 자동화 비활성화</button>
+          <button className="h-9 px-3 rounded-lg border border-[color-mix(in_oklab,var(--bearish)_28%,var(--border))] text-sm text-[var(--bearish)]">모든 자격증명 폐기</button>
+        </div>
+      </Panel>
     </div>
   );
 }
