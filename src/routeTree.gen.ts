@@ -17,6 +17,7 @@ import { Route as ScenarioRouteImport } from './routes/scenario'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AlertsRouteImport } from './routes/alerts'
@@ -66,6 +67,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AutomationRoute = AutomationRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
   '/automation': typeof AutomationRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
   '/automation': typeof AutomationRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/alerts': typeof AlertsRoute
   '/analysis': typeof AnalysisRouteWithChildren
   '/automation': typeof AutomationRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/analysis'
     | '/automation'
+    | '/calendar'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/analysis'
     | '/automation'
+    | '/calendar'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/analysis'
     | '/automation'
+    | '/calendar'
     | '/dashboard'
     | '/portfolio'
     | '/reports'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   AlertsRoute: typeof AlertsRoute
   AnalysisRoute: typeof AnalysisRouteWithChildren
   AutomationRoute: typeof AutomationRoute
+  CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/automation': {
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlertsRoute: AlertsRoute,
   AnalysisRoute: AnalysisRouteWithChildren,
   AutomationRoute: AutomationRoute,
+  CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
@@ -437,13 +458,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
