@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Calendar, ExternalLink, ArrowRight } from "lucide-react";
+import { Calendar, ExternalLink, ArrowRight, Lock, UserPlus, Eye } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, Badge, SectionTitle } from "@/components/nexflow/primitives";
 import { cn } from "@/lib/utils";
@@ -117,6 +117,10 @@ function EarningsCalendarScreen() {
   const [market, setMarket] = useState<MarketFilter>("전체");
   const [horizon, setHorizon] = useState<HorizonFilter>("전체");
 
+  // Preview mock states
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [hasTrackedStocks, setHasTrackedStocks] = useState(true);
+
   const filtered = useMemo(() => {
     const now = new Date("2026-07-14T00:00:00");
     const weekEnd = new Date(now);
@@ -134,6 +138,8 @@ function EarningsCalendarScreen() {
     }).sort((a, b) => a.date.localeCompare(b.date));
   }, [market, horizon]);
 
+  const showContent = isLoggedIn && hasTrackedStocks;
+
   return (
     <div className="space-y-6">
       <SectionTitle
@@ -142,44 +148,194 @@ function EarningsCalendarScreen() {
         description="관심종목과 보유 종목의 실적 일정을 한곳에서 확인합니다."
       />
 
-      <Panel className="p-4">
+      {/* Preview state toggles */}
+      <Panel className="p-3 border-dashed border-primary/30 bg-primary/[0.03]">
         <div className="flex flex-wrap items-center gap-3">
-          <FilterGroup
-            label="시장"
-            value={market}
-            options={["전체", "국내", "미국"] as const}
-            onChange={setMarket}
-          />
-          <FilterGroup
-            label="기간"
-            value={horizon}
-            options={["이번 주", "이번 달", "전체"] as const}
-            onChange={setHorizon}
-          />
-          <div className="ml-auto text-[11px] text-muted-foreground tabular-nums">
-            총 {filtered.length}건
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Eye className="h-3.5 w-3.5" />
+            <span>프리뷰 상태</span>
           </div>
+          <div className="flex p-1 rounded-lg bg-muted/40 border border-border/40">
+            <button
+              onClick={() => setIsLoggedIn(false)}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs transition",
+                !isLoggedIn
+                  ? "bg-[var(--surface-3)] text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              비회원
+            </button>
+            <button
+              onClick={() => setIsLoggedIn(true)}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs transition",
+                isLoggedIn
+                  ? "bg-[var(--surface-3)] text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              로그인
+            </button>
+          </div>
+          {isLoggedIn && (
+            <div className="flex p-1 rounded-lg bg-muted/40 border border-border/40">
+              <button
+                onClick={() => setHasTrackedStocks(false)}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs transition",
+                  !hasTrackedStocks
+                    ? "bg-[var(--surface-3)] text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                관심종목 없음
+              </button>
+              <button
+                onClick={() => setHasTrackedStocks(true)}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs transition",
+                  hasTrackedStocks
+                    ? "bg-[var(--surface-3)] text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                일정 있음
+              </button>
+            </div>
+          )}
         </div>
       </Panel>
 
-      {filtered.length === 0 ? (
-        <Panel className="p-10 text-center">
-          <div className="mx-auto h-10 w-10 rounded-full bg-muted grid place-items-center text-muted-foreground mb-3">
-            <Calendar className="h-4 w-4" />
-          </div>
-          <div className="text-sm font-semibold">예정된 실적 일정이 없습니다.</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            수집 주기에 따라 일정이 갱신됩니다.
-          </div>
-        </Panel>
+      {!isLoggedIn ? (
+        <GuestLoginPanel />
+      ) : !hasTrackedStocks ? (
+        <NoTrackedStocksPanel />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((e) => (
-            <EarningsCalendarCard key={e.id} event={e} />
-          ))}
-        </div>
+        <>
+          <Panel className="p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <FilterGroup
+                label="시장"
+                value={market}
+                options={["전체", "국내", "미국"] as const}
+                onChange={setMarket}
+              />
+              <FilterGroup
+                label="기간"
+                value={horizon}
+                options={["이번 주", "이번 달", "전체"] as const}
+                onChange={setHorizon}
+              />
+              <div className="ml-auto text-[11px] text-muted-foreground tabular-nums">
+                총 {filtered.length}건
+              </div>
+            </div>
+          </Panel>
+
+          {filtered.length === 0 ? (
+            <Panel className="p-10 text-center">
+              <div className="mx-auto h-10 w-10 rounded-full bg-muted grid place-items-center text-muted-foreground mb-3">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <div className="text-sm font-semibold">예정된 실적 일정이 없습니다.</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                수집 주기에 따라 일정이 갱신됩니다.
+              </div>
+            </Panel>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((e) => (
+                <EarningsCalendarCard key={e.id} event={e} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
+  );
+}
+
+function GuestLoginPanel() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <Panel className="p-8 md:p-12">
+      <div className="max-w-sm mx-auto text-center">
+        <div className="mx-auto h-12 w-12 rounded-2xl bg-muted grid place-items-center text-muted-foreground mb-4">
+          <Lock className="h-5 w-5" />
+        </div>
+        <h3 className="text-lg font-semibold text-foreground">로그인이 필요합니다</h3>
+        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+          실적 캘린더는 관심종목·포트폴리오 기준으로 표시됩니다.
+        </p>
+
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="mt-6 space-y-3 text-left"
+        >
+          <div>
+            <label className="block text-[11px] text-muted-foreground mb-1.5">이메일</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              className="w-full h-10 px-3 rounded-lg bg-muted/40 border border-border/60 text-sm focus:outline-none focus:border-[var(--cyan-accent)]/60"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] text-muted-foreground mb-1.5">비밀번호</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full h-10 px-3 rounded-lg bg-muted/40 border border-border/60 text-sm focus:outline-none focus:border-[var(--cyan-accent)]/60"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full h-10 rounded-lg bg-[var(--cyan-accent)] text-[oklch(0.12_0.03_270)] text-sm font-semibold glow-cyan transition hover:opacity-90"
+          >
+            로그인
+          </button>
+        </form>
+
+        <div className="mt-4 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <span>계정이 없으신가요?</span>
+          <button className="inline-flex items-center gap-1 text-[var(--cyan-accent)] hover:underline font-medium">
+            <UserPlus className="h-3 w-3" /> 회원가입
+          </button>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+function NoTrackedStocksPanel() {
+  return (
+    <Panel className="p-10 text-center">
+      <div className="mx-auto h-12 w-12 rounded-full bg-muted grid place-items-center text-muted-foreground mb-4">
+        <Calendar className="h-5 w-5" />
+      </div>
+      <div className="text-base font-semibold text-foreground">
+        관심종목 또는 포트폴리오에 등록된 종목이 없습니다.
+      </div>
+      <div className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto leading-relaxed">
+        실적 발표 일정은 관심종목이나 보유 포트폴리오에 등록된 종목을 기준으로 노출됩니다.
+      </div>
+      <div className="mt-5">
+        <Link
+          to="/watchlist"
+          className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-[var(--cyan-accent)] text-[oklch(0.12_0.03_270)] text-sm font-semibold glow-cyan transition hover:opacity-90"
+        >
+          관심종목 추가하기 <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </Panel>
   );
 }
 
