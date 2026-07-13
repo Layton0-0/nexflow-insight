@@ -113,7 +113,7 @@ function SettingsPage() {
           <BrokerStatusCard type="live" broker="한국투자증권" account="—" connected={false} lastVerified={null} />
         </div>
         <p className="text-[11px] text-muted-foreground mt-2">
-          자격증명 입력·수정은 자동투자 > 증권사 연동에서만 가능합니다.
+          자격증명 입력·수정은 자동투자 화면의 증권사 연동 탭에서만 가능합니다.
         </p>
       </div>
 
@@ -164,5 +164,49 @@ function SettingsPage() {
         </div>
       </Panel>
     </div>
+  );
+}
+
+function BrokerStatusCard({ type, broker, account, connected, lastVerified }: { type: "paper" | "live"; broker: string; account: string; connected: boolean; lastVerified: string | null }) {
+  const isPaper = type === "paper";
+  return (
+    <BrokerPanel className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-9 w-9 rounded-xl bg-muted grid place-items-center">
+            {isPaper ? <Bot className="h-4 w-4 text-primary" /> : <LockKeyhole className="h-4 w-4 text-[var(--neutral-accent)]" />}
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold truncate">
+              {broker} · {isPaper ? "모의투자" : "실전투자"}
+            </div>
+            <div className="text-[11px] text-muted-foreground truncate">{account}</div>
+          </div>
+        </div>
+        {connected ? (
+          <NxBadge intent="bullish"><CheckCircle2 className="h-3 w-3" />연동됨</NxBadge>
+        ) : (
+          <NxBadge intent="neutral">미연동</NxBadge>
+        )}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        <NxBadge intent="neutral">국내주식</NxBadge>
+        <NxBadge intent="neutral">미국주식</NxBadge>
+        {isPaper ? (
+          <NxBadge intent="info">모의</NxBadge>
+        ) : (
+          <NxBadge intent="warn"><LockKeyhole className="h-3 w-3" />실전 자동매매 잠금</NxBadge>
+        )}
+      </div>
+      <div className="mt-4 text-xs text-muted-foreground flex items-center justify-between">
+        <span>마지막 검증</span>
+        <span className="text-foreground tabular">{lastVerified ?? "—"}</span>
+      </div>
+      <div className="mt-4">
+        <Link to="/automation" className="inline-flex items-center gap-1 text-xs text-[var(--cyan-accent)] hover:underline">
+          자동투자에서 관리 <ChevronRight className="h-3 w-3" />
+        </Link>
+      </div>
+    </BrokerPanel>
   );
 }
