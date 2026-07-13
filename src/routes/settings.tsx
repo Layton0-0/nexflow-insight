@@ -5,6 +5,9 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle } from "@/components/nexflow/primitives";
 import { cn } from "@/lib/utils";
 import { KeyRound, ShieldCheck, ShieldAlert, LockKeyhole, Fingerprint, ChevronRight, Bot } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { Panel as BrokerPanel } from "@/components/nexflow/primitives";
+import { Badge as NxBadge } from "@/components/nexflow/primitives";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "설정 — NEXFLOW" }] }),
@@ -102,6 +105,18 @@ function SettingsPage() {
       </div>
 
       <SectionTitle eyebrow="BROKER & AUTOMATION" title="증권사 및 자동투자 설정" description="증권 계좌 연결, 자동화 모드, 리스크 한도, 감사 로그를 한 곳에서 관리합니다." />
+
+      <div>
+        <div className="text-sm font-semibold mb-3">증권사 연결 상태</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <BrokerStatusCard type="paper" broker="한국투자증권" account="KIS Paper · ****-**-1234" connected lastVerified="2026.06.24 09:12" />
+          <BrokerStatusCard type="live" broker="한국투자증권" account="—" connected={false} lastVerified={null} />
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-2">
+          자격증명 입력·수정은 자동투자 > 증권사 연동에서만 가능합니다.
+        </p>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-4">
         {[
           { icon: KeyRound, title: "증권사 연동", desc: "한국투자 · 키움 · 토스 계좌를 안전하게 관리합니다.", to: "/automation" },
