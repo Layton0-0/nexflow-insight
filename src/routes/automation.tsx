@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle, Stat, Badge as NxBadge } from "@/components/nexflow/primitives";
+import { GuestLoginPanel, EmptyState, PreviewBar, PreviewToggle } from "@/components/nexflow/auth-panels";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,10 @@ export const Route = createFileRoute("/automation")({
 
 function AutomationPage() {
   const [tab, setTab] = useState("overview");
+  const [authState, setAuthState] = useState<"loggedIn" | "guest">("loggedIn");
+  const [previewState, setPreviewState] = useState<"populated" | "empty" | "liveConsent">("populated");
+  const isEmpty = previewState === "empty";
+  const isLiveConsent = previewState === "liveConsent";
 
   return (
     <div className="space-y-6">
@@ -76,8 +81,38 @@ function AutomationPage() {
         </div>
       </div>
 
+      <PreviewBar>
+        <PreviewToggle
+          label="Auth"
+          value={authState}
+          onChange={setAuthState}
+          options={[
+            { value: "loggedIn", label: "로그인됨" },
+            { value: "guest", label: "게스트" },
+          ]}
+        />
+        <PreviewToggle
+          label="State"
+          value={previewState}
+          onChange={setPreviewState}
+          options={[
+            { value: "populated", label: "데이터 있음" },
+            { value: "empty", label: "비어 있음" },
+            { value: "liveConsent", label: "실전 활성화 고지" },
+          ]}
+        />
+      </PreviewBar>
+
       <SafetyBanner />
 
+      {authState === "guest" ? (
+        <GuestLoginPanel
+          title="로그인이 필요합니다"
+          description="자동투자 설정과 증권 연동은 로그인 후 이용할 수 있습니다."
+        />
+      ) : (
+      <>
+      {isLiveConsent && <LiveUnlockConsent />}
       <Tabs value={tab} onValueChange={setTab}>
         <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
           <TabsList className="flex-wrap h-auto justify-start">
@@ -93,16 +128,18 @@ function AutomationPage() {
         </div>
 
         <div className="mt-6">
-          <TabsContent value="overview"><OverviewTab onNav={setTab} /></TabsContent>
-          <TabsContent value="brokers"><BrokersTab /></TabsContent>
-          <TabsContent value="rules"><RulesTab /></TabsContent>
-          <TabsContent value="queue"><QueueTab /></TabsContent>
-          <TabsContent value="review"><ReviewTab /></TabsContent>
-          <TabsContent value="history"><HistoryTab /></TabsContent>
-          <TabsContent value="risk"><RiskTab /></TabsContent>
-          <TabsContent value="audit"><AuditTab /></TabsContent>
+          <TabsContent value="overview">{isEmpty ? <OverviewEmpty onConnect={() => setTab("brokers")} /> : <OverviewTab onNav={setTab} />}</TabsContent>
+          <TabsContent value="brokers">{isEmpty ? <BrokersEmpty /> : <BrokersTab />}</TabsContent>
+          <TabsContent value="rules">{isEmpty ? <RulesEmpty /> : <RulesTab />}</TabsContent>
+          <TabsContent value="queue">{isEmpty ? <QueueEmpty /> : <QueueTab />}</TabsContent>
+          <TabsContent value="review">{isEmpty ? <ReviewEmpty /> : <ReviewTab />}</TabsContent>
+          <TabsContent value="history">{isEmpty ? <HistoryEmpty /> : <HistoryTab />}</TabsContent>
+          <TabsContent value="risk">{isEmpty ? <RiskEmpty onConfigure={() => setTab("risk")} /> : <RiskTab />}</TabsContent>
+          <TabsContent value="audit">{isEmpty ? <AuditEmpty /> : <AuditTab />}</TabsContent>
         </div>
       </Tabs>
+      </>
+      )}
     </div>
   );
 }
