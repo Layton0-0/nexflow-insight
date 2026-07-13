@@ -2,13 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle, Badge, Delta, Stat } from "@/components/nexflow/primitives";
+import { EmptyState } from "@/components/nexflow/auth-panels";
 import { portfolioHoldings, exposureBreakdown, formatPrice } from "@/lib/mock-data";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { ChevronDown, Shield, TrendingUp, Scale } from "lucide-react";
+import { ChevronDown, Shield, TrendingUp, Scale, Briefcase, Bot, KeyRound, LockKeyhole } from "lucide-react";
 import { BookmarkCheck } from "lucide-react";
 import { SavePersonalSnapshotDialog } from "@/components/nexflow/snapshots";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({ meta: [{ title: "포트폴리오 — NEXFLOW" }] }),
@@ -16,6 +18,19 @@ export const Route = createFileRoute("/portfolio")({
 });
 
 function Portfolio() {
+  type Ctx = "manual" | "paper" | "live";
+  // Mock connectivity: paper connected, live not connected → default hint = paper
+  const paperConnected = true;
+  const liveConnected = false;
+  const defaultCtx: Ctx = liveConnected ? "live" : paperConnected ? "paper" : "manual";
+  const [ctx, setCtx] = useState<Ctx>(defaultCtx);
+
+  const ctxMeta: Record<Ctx, { label: string; icon: typeof Briefcase; broker?: string; lastSync?: string }> = {
+    manual: { label: "수동 입력", icon: Briefcase },
+    paper: { label: "모의계좌", icon: Bot, broker: "한국투자 · KIS Paper", lastSync: "2026.06.24 09:12" },
+    live: { label: "실계좌", icon: KeyRound },
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -30,6 +45,77 @@ function Portfolio() {
         />
       </div>
 
+      <Panel className="p-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex p-1 rounded-lg bg-muted/40 border border-border/40">
+            {(["manual", "paper", "live"] as Ctx[]).map((c) => {
+              const Icon = ctxMeta[c].icon;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setCtx(c)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs transition inline-flex items-center gap-1.5",
+                    ctx === c ? "bg-[var(--surface-3)] text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {ctxMeta[c].label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+            {ctx === "paper" && ctxMeta.paper.broker && (
+              <>
+                <span>{ctxMeta.paper.broker}</span>
+                <span className="opacity-40">·</span>
+                <span className="tabular">마지막 동기화 {ctxMeta.paper.lastSync}</span>
+              </>
+            )}
+            {ctx === "live" && (
+              <span className="inline-flex items-center gap-1">
+                <LockKeyhole className="h-3 w-3" /> 실계좌 미연동
+              </span>
+            )}
+            {ctx === "manual" && <span>수동 입력한 보유 종목만 표시됩니다.</span>}
+          </div>
+          <div className="ml-auto text-[11px] text-muted-foreground">
+            컨텍스트 전환 시 보유·합계는 절대 합산되지 않습니다.
+          </div>
+        </div>
+      </Panel>
+
+      {ctx !== "manual" && (
+        (ctx === "live" && !liveConnected) || (ctx === "paper" && !paperConnected) ? (
+          <EmptyState
+            icon={ctx === "live" ? <KeyRound className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
+            title={ctx === "live" ? "연동된 실계좌가 없습니다" : "연동된 모의계좌가 없습니다"}
+            description="자동투자 > 증권사 연동에서 계좌를 연결하면 이곳에서 보유 · 손익 · 리스크가 표시됩니다."
+            ctaLabel="증권사 연동"
+            ctaTo="/automation"
+            secondary={
+              <span className="text-[11px] text-muted-foreground">마지막 동기화 · —</span>
+            }
+          />
+        ) : (
+          <PortfolioBody source={ctx} />
+        )
+      )}
+
+      {ctx === "manual" && <PortfolioBody source="manual" />}
+    </div>
+  );
+}
+
+function PortfolioBody({ source }: { source: "manual" | "paper" | "live" }) {
+  const sourceChip =
+    source === "manual" ? { label: "수동", intent: "neutral" as const }
+    : source === "paper" ? { label: "브로커 (모의)", intent: "info" as const }
+    : { label: "브로커 (실전)", intent: "warn" as const };
+
+  return (
+    <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Panel className="p-5"><Stat label="총 평가금액" value="112,840,000원" suffix="KRW" /></Panel>
         <Panel className="p-5"><Stat label="총 손익" value="+18,420,000원" intent="bullish" delta={<Delta value={19.5} />} /></Panel>
@@ -105,6 +191,7 @@ function Portfolio() {
             <thead>
               <tr className="text-[10px] uppercase tracking-wider text-muted-foreground border-b border-border/50">
                 <th className="text-left font-medium px-5 py-3">종목</th>
+                <th className="text-left font-medium px-3 py-3">소스</th>
                 <th className="text-right font-medium px-3 py-3">수량</th>
                 <th className="text-right font-medium px-3 py-3">평단</th>
                 <th className="text-right font-medium px-3 py-3">현재가</th>
@@ -119,7 +206,7 @@ function Portfolio() {
             <tbody>
               {portfolioHoldings.map((h) => {
                 const ret = ((h.price - h.avgPrice) / h.avgPrice) * 100;
-                return <HoldingRow key={h.ticker} h={h} ret={ret} />;
+                return <HoldingRow key={h.ticker} h={h} ret={ret} sourceChip={sourceChip} />;
               })}
             </tbody>
           </table>
@@ -138,7 +225,7 @@ function Portfolio() {
   );
 }
 
-function HoldingRow({ h, ret }: { h: typeof portfolioHoldings[number]; ret: number }) {
+function HoldingRow({ h, ret, sourceChip }: { h: typeof portfolioHoldings[number]; ret: number; sourceChip: { label: string; intent: "neutral" | "info" | "warn" } }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -152,6 +239,7 @@ function HoldingRow({ h, ret }: { h: typeof portfolioHoldings[number]; ret: numb
             </div>
           </div>
         </td>
+        <td className="px-3 py-3"><Badge intent={sourceChip.intent}>{sourceChip.label}</Badge></td>
         <td className="px-3 py-3 text-right tabular-nums">{h.shares}</td>
         <td className="px-3 py-3 text-right tabular-nums text-muted-foreground">{formatPrice(h.avgPrice, h.currency)}</td>
         <td className="px-3 py-3 text-right tabular-nums">{formatPrice(h.price, h.currency)}</td>
@@ -181,7 +269,7 @@ function HoldingRow({ h, ret }: { h: typeof portfolioHoldings[number]; ret: numb
       </tr>
       {open && (
         <tr className="bg-[var(--surface-2)]/40 border-b border-border/30">
-          <td colSpan={10} className="px-5 py-4">
+          <td colSpan={11} className="px-5 py-4">
             <div className="grid md:grid-cols-5 gap-3 text-xs">
               {[
                 { t: "보유 근거", v: "실적 성장 추세 유지, 수급 안정", c: "var(--bullish)" },

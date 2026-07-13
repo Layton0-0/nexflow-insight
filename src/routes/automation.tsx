@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Panel, PanelHeader, SectionTitle, Stat, Badge as NxBadge } from "@/components/nexflow/primitives";
+import { GuestLoginPanel, EmptyState, PreviewBar, PreviewToggle } from "@/components/nexflow/auth-panels";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,10 @@ export const Route = createFileRoute("/automation")({
 
 function AutomationPage() {
   const [tab, setTab] = useState("overview");
+  const [authState, setAuthState] = useState<"loggedIn" | "guest">("loggedIn");
+  const [previewState, setPreviewState] = useState<"populated" | "empty" | "liveConsent">("populated");
+  const isEmpty = previewState === "empty";
+  const isLiveConsent = previewState === "liveConsent";
 
   return (
     <div className="space-y-6">
@@ -76,8 +81,38 @@ function AutomationPage() {
         </div>
       </div>
 
+      <PreviewBar>
+        <PreviewToggle
+          label="Auth"
+          value={authState}
+          onChange={setAuthState}
+          options={[
+            { value: "loggedIn", label: "로그인됨" },
+            { value: "guest", label: "게스트" },
+          ]}
+        />
+        <PreviewToggle
+          label="State"
+          value={previewState}
+          onChange={setPreviewState}
+          options={[
+            { value: "populated", label: "데이터 있음" },
+            { value: "empty", label: "비어 있음" },
+            { value: "liveConsent", label: "실전 활성화 고지" },
+          ]}
+        />
+      </PreviewBar>
+
       <SafetyBanner />
 
+      {authState === "guest" ? (
+        <GuestLoginPanel
+          title="로그인이 필요합니다"
+          description="자동투자 설정과 증권 연동은 로그인 후 이용할 수 있습니다."
+        />
+      ) : (
+      <>
+      {isLiveConsent && <LiveUnlockConsent />}
       <Tabs value={tab} onValueChange={setTab}>
         <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
           <TabsList className="flex-wrap h-auto justify-start">
@@ -93,16 +128,18 @@ function AutomationPage() {
         </div>
 
         <div className="mt-6">
-          <TabsContent value="overview"><OverviewTab onNav={setTab} /></TabsContent>
-          <TabsContent value="brokers"><BrokersTab /></TabsContent>
-          <TabsContent value="rules"><RulesTab /></TabsContent>
-          <TabsContent value="queue"><QueueTab /></TabsContent>
-          <TabsContent value="review"><ReviewTab /></TabsContent>
-          <TabsContent value="history"><HistoryTab /></TabsContent>
-          <TabsContent value="risk"><RiskTab /></TabsContent>
-          <TabsContent value="audit"><AuditTab /></TabsContent>
+          <TabsContent value="overview">{isEmpty ? <OverviewEmpty onConnect={() => setTab("brokers")} /> : <OverviewTab onNav={setTab} />}</TabsContent>
+          <TabsContent value="brokers">{isEmpty ? <BrokersEmpty /> : <BrokersTab />}</TabsContent>
+          <TabsContent value="rules">{isEmpty ? <RulesEmpty /> : <RulesTab />}</TabsContent>
+          <TabsContent value="queue">{isEmpty ? <QueueEmpty /> : <QueueTab />}</TabsContent>
+          <TabsContent value="review">{isEmpty ? <ReviewEmpty /> : <ReviewTab />}</TabsContent>
+          <TabsContent value="history">{isEmpty ? <HistoryEmpty /> : <HistoryTab />}</TabsContent>
+          <TabsContent value="risk">{isEmpty ? <RiskEmpty onConfigure={() => setTab("risk")} /> : <RiskTab />}</TabsContent>
+          <TabsContent value="audit">{isEmpty ? <AuditEmpty /> : <AuditTab />}</TabsContent>
         </div>
       </Tabs>
+      </>
+      )}
     </div>
   );
 }
@@ -292,7 +329,180 @@ function BrokersTab() {
           ))}
         </div>
       </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+          실전투자 <NxBadge intent="warn"><LockKeyhole className="h-3 w-3" />기본 잠금</NxBadge>
+        </h4>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <LiveAccountCard broker="한국투자증권" initials="KIS" status="not-connected" />
+          <LiveAccountCard broker="키움증권" initials="키움" status="locked" />
+        </div>
+      </div>
     </div>
+  );
+}
+
+function LiveAccountCard({ broker, initials, status }: { broker: string; initials: string; status: "not-connected" | "connected" | "locked" }) {
+  const badge =
+    status === "connected" ? <NxBadge intent="bullish"><CheckCircle2 className="h-3 w-3" />연동됨</NxBadge>
+    : status === "locked" ? <NxBadge intent="warn"><LockKeyhole className="h-3 w-3" />잠김</NxBadge>
+    : <NxBadge intent="neutral">미연동</NxBadge>;
+  return (
+    <Panel className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-8 w-8 rounded-lg bg-muted grid place-items-center text-[10px] font-bold">{initials}</div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold truncate">{broker} · 실전투자</div>
+            <div className="text-[11px] text-muted-foreground">실계좌 · 실제 자금 · 실전 자동매매는 별도 동의 필요</div>
+          </div>
+        </div>
+        {badge}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        <NxBadge intent="neutral">국내주식</NxBadge>
+        <NxBadge intent="neutral">미국주식</NxBadge>
+        <NxBadge intent="warn"><LockKeyhole className="h-3 w-3" />실전 자동매매 잠금</NxBadge>
+      </div>
+      <div className="mt-4 text-xs text-muted-foreground space-y-1">
+        <div className="flex justify-between"><span>계좌</span><span className="text-foreground">—</span></div>
+        <div className="flex justify-between"><span>마지막 검증</span><span className="text-foreground">—</span></div>
+      </div>
+      <div className="mt-5 flex items-center gap-2">
+        <ConnectBrokerDialog trigger={<Button size="sm" className="flex-1" disabled={status === "locked"}>실계좌 연결</Button>} />
+        <Button size="sm" variant="ghost">자세히</Button>
+      </div>
+    </Panel>
+  );
+}
+
+/* ============ Live Unlock Consent ============ */
+
+function LiveUnlockConsent() {
+  const [checks, setChecks] = useState({ loss: false, live: false, own: false });
+  const allChecked = checks.loss && checks.live && checks.own;
+  const items: { key: keyof typeof checks; label: string }[] = [
+    { key: "loss", label: "실전 자동매매로 손실이 발생할 수 있음을 이해합니다." },
+    { key: "live", label: "추가 승인 절차 전까지 실전 자동매매는 계속 비활성 상태로 유지됩니다." },
+    { key: "own", label: "본인 명의의 증권 계좌 정보만 사용하고 있음을 확인합니다." },
+  ];
+  return (
+    <Panel className="p-5 border-[color-mix(in_oklab,var(--primary)_28%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_5%,transparent)]">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="h-10 w-10 rounded-xl bg-[color-mix(in_oklab,var(--primary)_16%,transparent)] text-[var(--primary)] grid place-items-center shrink-0">
+          <ShieldCheck className="h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <div className="text-[11px] font-semibold text-[var(--primary)] tracking-tight mb-1">LIVE UNLOCK · 실전 자동매매 활성화 전 고지</div>
+          <div className="text-base font-semibold text-foreground">실전 자동매매를 활성화하기 전에 아래 항목을 확인해주세요</div>
+          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+            NEXFLOW는 사용자의 명시적 동의 없이 실전 주문을 실행하지 않습니다. 아래 항목을 모두 확인해야 다음 단계로 넘어갈 수 있습니다.
+          </p>
+          <div className="mt-4 space-y-2">
+            {items.map((it) => (
+              <label key={it.key} className="flex items-start gap-2 text-sm">
+                <Checkbox
+                  checked={checks[it.key]}
+                  onCheckedChange={(v) => setChecks((p) => ({ ...p, [it.key]: !!v }))}
+                  className="mt-0.5"
+                />
+                <span>{it.label}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <Button size="sm" disabled={!allChecked}>
+              <LockKeyhole className="h-4 w-4" />
+              다음 단계 (추가 승인 필요)
+            </Button>
+            <Button size="sm" variant="outline">모의투자만 계속</Button>
+            <span className="text-[11px] text-muted-foreground">완전 자율 모드는 이 단계에서 활성화되지 않습니다.</span>
+          </div>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+/* ============ Empty States ============ */
+
+function OverviewEmpty({ onConnect }: { onConnect: () => void }) {
+  return (
+    <EmptyState
+      icon={<KeyRound className="h-5 w-5" />}
+      title="연동된 증권사가 없습니다"
+      description="증권 계좌를 연결하면 자동화 개요, 신호 현황, 리스크 상태를 한눈에 확인할 수 있습니다."
+      ctaLabel="증권사 연동"
+      onCta={onConnect}
+    />
+  );
+}
+function BrokersEmpty() {
+  return (
+    <EmptyState
+      icon={<KeyRound className="h-5 w-5" />}
+      title="연동된 계좌가 없습니다"
+      description="한국투자 · 키움 · 토스 계좌를 안전하게 연결해 자동화를 시작하세요."
+      secondary={<ConnectBrokerDialog trigger={<Button size="sm"><Plus className="h-4 w-4" />증권사 연결</Button>} />}
+    />
+  );
+}
+function RulesEmpty() {
+  return (
+    <EmptyState
+      icon={<Workflow className="h-5 w-5" />}
+      title="등록된 자동화 규칙이 없습니다"
+      description="관심종목 · 포트폴리오 · 알림 규칙을 조건으로 자동화 규칙을 만들 수 있습니다."
+      secondary={<CreateRuleDialog />}
+    />
+  );
+}
+function QueueEmpty() {
+  return (
+    <EmptyState
+      icon={<Sparkles className="h-5 w-5" />}
+      title="대기 중인 신호가 없습니다"
+      description="신호가 생성되면 이곳에서 모의 승인 또는 검토 흐름으로 이동합니다."
+    />
+  );
+}
+function ReviewEmpty() {
+  return (
+    <EmptyState
+      icon={<ShieldCheck className="h-5 w-5" />}
+      title="검토할 주문이 없습니다"
+      description="주문 제안이 만들어지면 실행 전 리스크 체크와 함께 이곳에 표시됩니다."
+    />
+  );
+}
+function HistoryEmpty() {
+  return (
+    <EmptyState
+      icon={<BookmarkCheck className="h-5 w-5" />}
+      title="실행 이력이 없습니다"
+      description="모의 체결, 거절, 실전 실행 내역이 발생하면 이곳에 기록됩니다."
+    />
+  );
+}
+function RiskEmpty({ onConfigure }: { onConfigure: () => void }) {
+  return (
+    <EmptyState
+      icon={<ShieldAlert className="h-5 w-5" />}
+      title="리스크 한도가 설정되지 않았습니다"
+      description="일일 손실 · 주문 한도 · 종목별 상한을 설정해 자동화를 안전하게 운영하세요."
+      ctaLabel="한도 설정"
+      onCta={onConfigure}
+    />
+  );
+}
+function AuditEmpty() {
+  return (
+    <EmptyState
+      icon={<Fingerprint className="h-5 w-5" />}
+      title="감사 로그가 없습니다"
+      description="자동화와 관련된 이벤트가 발생하면 이곳에 기기 · IP 정보와 함께 기록됩니다."
+    />
   );
 }
 
